@@ -7,7 +7,7 @@
 
 2. 查询mobileprovision内证书状态（可用、移除）。
 
-![image](https://github.com/lemon4ex/Provisioning/QQ20170707-144659.png)
+![image](https://github.com/lemon4ex/Provisioning/blob/master/QQ20170707-144659.png)
 
 安装使用
 ============
