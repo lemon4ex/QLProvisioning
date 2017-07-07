@@ -1,9 +1,19 @@
+说明
+============
+
+一个查看.mobileprovision文件（在iOS上）和.provisionprofile文件（在OS X上）的Quick Look插件。
+
+1. 查看mobileprovision内文件相关内容。
+
+2. 查询mobileprovision内证书状态（可用、移除）。
+
 安装使用
 ============
 
 1. 拷贝Provisioning.qlgenerator 到 ~/Library/QuickLook
 
 2. 修改沙盒规则：
+
 修改/usr/share/sandbox/qlmanage.sb文件:
 
 ```
