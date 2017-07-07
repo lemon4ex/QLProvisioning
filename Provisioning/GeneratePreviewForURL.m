@@ -6,10 +6,156 @@
 #import <Cocoa/Cocoa.h>
 #import <Security/Security.h>
 
+#import "SecOCSPResponse.h"
+#import "SecOCSPRequest.h"
+#import "SecBase64.h"
+#import "SecCFRelease.h"
 
 // all code in Mavericks should be signed, but if we do that we lose the ability to lookup devices in Xcodes preferences
 #define SIGNED_CODE 0
 
+typedef void (^CertRevocationCompleteHandle)(SecOCSPSingleResponseRef singleResponse,NSError *error);
+CFURLRef createGetURL(CFURLRef responder, CFDataRef request) {
+    CFURLRef getURL = NULL;
+    CFMutableDataRef base64Request = NULL;
+    CFStringRef base64RequestString = NULL;
+    CFStringRef peRequest = NULL;
+    CFIndex base64Len;
+    
+    base64Len = SecBase64Encode(NULL, CFDataGetLength(request), NULL, 0);
+    /* Don't bother doing all the work below if we know the end result will
+     exceed 255 bytes (minus one for the '/' separator makes 254). */
+    if (base64Len + CFURLGetBytes(responder, NULL, 0) > 254)
+        return NULL;
+    
+    require(base64Request = CFDataCreateMutable(kCFAllocatorDefault,
+                                                base64Len), errOut);
+    CFDataSetLength(base64Request, base64Len);
+    SecBase64Encode(CFDataGetBytePtr(request), CFDataGetLength(request),
+                    (char *)CFDataGetMutableBytePtr(base64Request), base64Len);
+    require(base64RequestString = CFStringCreateWithBytes(kCFAllocatorDefault,
+                                                          CFDataGetBytePtr(base64Request), base64Len, kCFStringEncodingUTF8,
+                                                          false), errOut);
+    require(peRequest = CFURLCreateStringByAddingPercentEscapes(
+                                                                kCFAllocatorDefault, base64RequestString, NULL, CFSTR("+/="),
+                                                                kCFStringEncodingUTF8), errOut);
+    CFStringRef urlString = CFURLGetString(responder);
+    CFStringRef fullURL;
+    fullURL = CFStringCreateWithFormat(kCFAllocatorDefault, NULL,
+                                       CFSTR("%@%@"), urlString, peRequest);
+    getURL = CFURLCreateWithString(kCFAllocatorDefault, fullURL, NULL);
+    CFRelease(fullURL);
+    
+errOut:
+    CFReleaseSafe(base64Request);
+    CFReleaseSafe(base64RequestString);
+    CFReleaseSafe(peRequest);
+    return getURL;
+}
+
+NSString *cfabsoluteTimeToStringLocal(CFAbsoluteTime abstime)
+{
+    CFDateRef cfDate = CFDateCreate(kCFAllocatorDefault, abstime);
+    CFDateFormatterRef dateFormatter = CFDateFormatterCreate(kCFAllocatorDefault, CFLocaleCopyCurrent(), kCFDateFormatterFullStyle, kCFDateFormatterLongStyle);
+    CFDateFormatterSetFormat(dateFormatter, CFSTR("yyyy-MM-dd EEEE HH:mm:ss"));
+    CFStringRef newString = CFDateFormatterCreateStringWithDate(kCFAllocatorDefault, dateFormatter, cfDate);
+    CFRelease(dateFormatter);
+    CFRelease(cfDate);
+    return (__bridge_transfer NSString *)newString;
+}
+
+NSString *certStatusToString(SecAsn1OCSPCertStatusTag certStatus)
+{
+    switch (certStatus) {
+        case CS_Good:
+            return @"Good";
+        case CS_Revoked:
+            return @"Revoked";
+        case CS_Unknown:
+            return @"Unknown";
+        default:
+            break;
+    }
+    
+    return @"Unknown";
+}
+
+NSString *revocationReasonToString(SecRevocationReason revocationReason)
+{
+    switch (revocationReason) {
+        case kSecRevocationReasonUnrevoked:
+            return @"Unrevoked";
+            break;
+        case kSecRevocationReasonUndetermined:
+            return @"Undetermined";
+            break;
+        case kSecRevocationReasonUnspecified:
+            return @"Unspecified";
+            break;
+        case kSecRevocationReasonKeyCompromise:
+            return @"KeyCompromise";
+            break;
+        case kSecRevocationReasonCACompromise:
+            return @"CACompromise";
+            break;
+        case kSecRevocationReasonAffiliationChanged:
+            return @"AffiliationChanged";
+            break;
+        case kSecRevocationReasonCessationOfOperation:
+            return @"CessationOfOperation";
+            break;
+        case kSecRevocationReasonCertificateHold:
+            return @"CertificateHold";
+            break;
+        case kSecRevocationReasonRemoveFromCRL:
+            return @"RemoveFromCRL";
+            break;
+        case kSecRevocationReasonPrivilegeWithdrawn:
+            return @"PrivilegeWithdrawn";
+            break;
+        case kSecRevocationReasonAACompromise:
+            return @"AACompromise";
+            break;
+        default:
+            break;
+    }
+    return @"Undetermined";
+}
+
+SecOCSPSingleResponseRef checkCertRevocation(NSData *serialNumber)
+{
+    const char *urlString = "http://ocsp.apple.com/ocsp-wwdr01/ME4wTKADAgEAMEUwQzBBMAkGBSsOAwIaBQAEFADrDMz0cWy6RiOj1S%2BY1D32MKkdBBSIJxcJqbYYYIvs67r2R1nFUlSjtwII";
+    CFURLRef cfUrl = CFURLCreateWithBytes(NULL, (const UInt8 *)urlString, strlen(urlString), kCFStringEncodingUTF8, NULL);
+    CFURLRef url = createGetURL(cfUrl, (__bridge CFDataRef)serialNumber);
+    CFReleaseSafe(cfUrl);
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:(__bridge_transfer NSURL *)url];
+    [request setValue:@"securityd (unknown version) CFNetwork/672.1.15 Darwin/14.0.0" forHTTPHeaderField:@"User-Agent"];
+    [request setValue:@"application/ocsp-response" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:@"no-cache" forHTTPHeaderField:@"Cache-Control"];
+    NSError *error = nil;
+    NSURLResponse *urlRespone = nil;
+    NSData  *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&urlRespone error:&error];
+    SecOCSPSingleResponseRef singleResponse = NULL;
+    SecOCSPResponseRef ocspResponse = NULL;
+    if (data) {
+        ocspResponse = SecOCSPResponseCreate((__bridge_retained CFDataRef)data, 0);
+        if (ocspResponse) {
+            SecOCSPResponseStatus orStatus = SecOCSPGetResponseStatus(ocspResponse);
+            if (orStatus == kSecOCSPSuccess) {
+                SecAsn1OCSPSingleResponse *responses = *ocspResponse->responseData.responses;
+                singleResponse = SecOCSPSingleResponseCreate(responses,ocspResponse->coder);
+                
+            }
+            SecOCSPResponseFinalize(ocspResponse);
+        }
+    }
+    else
+    {
+        NSLog(@"%@",[error localizedDescription]);
+    }
+    
+    return singleResponse;
+}
 
 OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options);
 void CancelPreviewGeneration(void *thisInterface, QLPreviewRequestRef preview);
@@ -215,17 +361,39 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 					if ([value isKindOfClass:[NSArray class]]) {
 						static NSString *const devCertSummaryKey = @"summary";
 						static NSString *const devCertInvalidityDateKey = @"invalidity";
-						
+//						static NSString *const devCertUpdateTimeKey = @"updateTime";
+                        static NSString *const devCertRevokeDateKey = @"revokeDate";
+                        static NSString *const devCertStatusDescKey = @"statusDesc";
+                        static NSString *const devCertStatusKey = @"certStatus";
+                        
 						NSMutableArray *certificateDetails = [NSMutableArray array];
 						NSArray *array = (NSArray *)value;
 						for (NSData *data in array) {
 							SecCertificateRef certificateRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)data);
 							if (certificateRef) {
-								CFStringRef summaryRef = SecCertificateCopySubjectSummary(certificateRef);
+                                // cert data
+                                CFErrorRef error = NULL;
+                                CFDataRef serialNumberData = SecCertificateCopySerialNumber(certificateRef, &error);
+
+                                SecOCSPSingleResponseRef singleResponse = checkCertRevocation((__bridge NSData *)serialNumberData);
+                                NSMutableDictionary *detailsDict = [NSMutableDictionary dictionary];
+                                if(singleResponse)
+                                {
+//                                    NSString *updateTime = cfabsoluteTimeToStringLocal(singleResponse->thisUpdate);
+                                    NSString *revokeDate = cfabsoluteTimeToStringLocal(singleResponse->revokedTime);
+                                    NSString *statusString = certStatusToString(singleResponse->certStatus);
+                                    NSString *statusDescString = revocationReasonToString(singleResponse->crlReason);
+                                    [detailsDict setObject:statusString forKey:devCertStatusKey];
+//                                    [detailsDict setObject:updateTime forKey:devCertUpdateTimeKey];
+                                    [detailsDict setObject:statusDescString forKey:devCertStatusDescKey];
+                                    [detailsDict setObject:revokeDate forKey:devCertRevokeDateKey];
+                                    free(singleResponse);
+                                }
+
+                                CFStringRef summaryRef = SecCertificateCopySubjectSummary(certificateRef);
 								NSString *summary = (NSString *)CFBridgingRelease(summaryRef);
 								if (summary) {
-									NSMutableDictionary *detailsDict = [NSMutableDictionary dictionaryWithObject:summary forKey:devCertSummaryKey];
-									
+                                    [detailsDict setObject:summary forKey:devCertSummaryKey];
 									CFErrorRef error;
 									CFDictionaryRef valuesDict = SecCertificateCopyValues(certificateRef, (__bridge CFArrayRef)@[(__bridge id)kSecOIDInvalidityDate], &error);
 									if (valuesDict) {
@@ -278,24 +446,37 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 						}
 						
 						NSMutableString *certificates = [NSMutableString string];
-						[certificates appendString:@"<table>\n"];
 						BOOL evenRow = NO;
 						NSArray *sortedCertificateDetails = [certificateDetails sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
 							return [((NSDictionary *)obj1)[devCertSummaryKey] compare:((NSDictionary *)obj2)[devCertSummaryKey]];
 						}];
 						
 						for (NSDictionary *detailsDict in sortedCertificateDetails) {
+                            [certificates appendString:@"<table>\n"];
 							NSString *summary = detailsDict[devCertSummaryKey];
 							NSDate *invalidityDate = detailsDict[devCertInvalidityDateKey];
 							NSString *expiration = expirationStringForDateInCalendar(invalidityDate, calendar);
 							if (! expiration) {
 								expiration = @"<span class='warning'>No invalidity date in certificate</span>";
 							}
-							[certificates appendFormat:@"<tr class='%s'><td>%@</td><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), summary, expiration];
-							evenRow = !evenRow;
+                            [certificates appendFormat:@"<tr class='%s'><td>%@</td><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), summary, expiration];
+                            NSString *status = detailsDict[devCertStatusKey];
+                            
+                            if ([status isEqualToString:@"Good"]) {
+                                [certificates appendFormat:@"<tr class='%s'><td>%@</td><td><span class='ok'>%@</span></td></tr>\n", (evenRow ? "even" : "odd"), @"Status:", status];
+                            }
+                            else
+                            {
+                                [certificates appendFormat:@"<tr class='%s'><td>%@</td><td><span class='error'>%@</span></td></tr>\n", (evenRow ? "even" : "odd"), @"Status:", status];
+                                [certificates appendFormat:@"<tr class='%s'><td>%@</td><td><span class='error'>%@</span></td></tr>\n", (evenRow ? "even" : "odd"), @"Status Description:", detailsDict[devCertStatusDescKey]];
+                                [certificates appendFormat:@"<tr class='%s'><td>%@</td><td><span class='error'>%@</span></td></tr>\n", (evenRow ? "even" : "odd"), @"Revoke Date:", detailsDict[devCertRevokeDateKey]];
+                            }
+                            
+//                            [certificates appendFormat:@"<tr class='%s'><td>%@</td><td>%@</td></tr>\n", (evenRow ? "even" : "odd"), @"Update Time:", detailsDict[devCertUpdateTimeKey]];
+							
+							evenRow = !evenRow; // make tr color different
+                            [certificates appendString:@"</table>\n"];
 						}
-						[certificates appendString:@"</table>\n"];
-						
 						synthesizedValue = [certificates copy];
 						[synthesizedInfo setObject:synthesizedValue forKey:@"DeveloperCertificatesFormatted"];
 					}

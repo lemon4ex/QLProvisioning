@@ -46,6 +46,17 @@
 		44707D7E182021A90005B2C6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44707D7D182021A90005B2C6 /* Security.framework */; };
 		44707D8418205A7C0005B2C6 /* template.html in Resources */ = {isa = PBXBuildFile; fileRef = 44707D8318205A7C0005B2C6 /* template.html */; };
 		44707DC61823198A0005B2C6 /* Read Me.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 44707DC51823198A0005B2C6 /* Read Me.rtf */; };
+		E9DD46831F0DD8EF006C0003 /* ocspTemplates.h in Headers */ = {isa = PBXBuildFile; fileRef = E9DD46741F0DD8EF006C0003 /* ocspTemplates.h */; };
+		E9DD46841F0DD8EF006C0003 /* SecBase64.c in Sources */ = {isa = PBXBuildFile; fileRef = E9DD46751F0DD8EF006C0003 /* SecBase64.c */; };
+		E9DD46851F0DD8EF006C0003 /* SecBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = E9DD46761F0DD8EF006C0003 /* SecBase64.h */; };
+		E9DD46861F0DD8EF006C0003 /* SecCFRelease.h in Headers */ = {isa = PBXBuildFile; fileRef = E9DD46771F0DD8EF006C0003 /* SecCFRelease.h */; };
+		E9DD46881F0DD8EF006C0003 /* SecInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = E9DD46791F0DD8EF006C0003 /* SecInternal.h */; };
+		E9DD46891F0DD8EF006C0003 /* SecOCSPRequest.c in Sources */ = {isa = PBXBuildFile; fileRef = E9DD467A1F0DD8EF006C0003 /* SecOCSPRequest.c */; };
+		E9DD468A1F0DD8EF006C0003 /* SecOCSPRequest.h in Headers */ = {isa = PBXBuildFile; fileRef = E9DD467B1F0DD8EF006C0003 /* SecOCSPRequest.h */; };
+		E9DD468B1F0DD8EF006C0003 /* SecOCSPResponse.c in Sources */ = {isa = PBXBuildFile; fileRef = E9DD467C1F0DD8EF006C0003 /* SecOCSPResponse.c */; };
+		E9DD468C1F0DD8EF006C0003 /* SecOCSPResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = E9DD467D1F0DD8EF006C0003 /* SecOCSPResponse.h */; };
+		E9DD468E1F0E1ED7006C0003 /* entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = E9DD468D1F0E1ED7006C0003 /* entitlements.plist */; };
+		E9DD46A01F0F593E006C0003 /* nameTemplates.h in Headers */ = {isa = PBXBuildFile; fileRef = E9DD469F1F0F593E006C0003 /* nameTemplates.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +93,17 @@
 		44707D8218202BEA0005B2C6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		44707D8318205A7C0005B2C6 /* template.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = template.html; sourceTree = "<group>"; };
 		44707DC51823198A0005B2C6 /* Read Me.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = "Read Me.rtf"; sourceTree = "<group>"; };
+		E9DD46741F0DD8EF006C0003 /* ocspTemplates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ocspTemplates.h; sourceTree = "<group>"; };
+		E9DD46751F0DD8EF006C0003 /* SecBase64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SecBase64.c; sourceTree = "<group>"; };
+		E9DD46761F0DD8EF006C0003 /* SecBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecBase64.h; sourceTree = "<group>"; };
+		E9DD46771F0DD8EF006C0003 /* SecCFRelease.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecCFRelease.h; sourceTree = "<group>"; };
+		E9DD46791F0DD8EF006C0003 /* SecInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecInternal.h; sourceTree = "<group>"; };
+		E9DD467A1F0DD8EF006C0003 /* SecOCSPRequest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SecOCSPRequest.c; sourceTree = "<group>"; };
+		E9DD467B1F0DD8EF006C0003 /* SecOCSPRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecOCSPRequest.h; sourceTree = "<group>"; };
+		E9DD467C1F0DD8EF006C0003 /* SecOCSPResponse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SecOCSPResponse.c; sourceTree = "<group>"; };
+		E9DD467D1F0DD8EF006C0003 /* SecOCSPResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecOCSPResponse.h; sourceTree = "<group>"; };
+		E9DD468D1F0E1ED7006C0003 /* entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = entitlements.plist; sourceTree = "<group>"; };
+		E9DD469F1F0F593E006C0003 /* nameTemplates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nameTemplates.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,10 +158,12 @@
 		44707D691820208F0005B2C6 /* Provisioning */ = {
 			isa = PBXGroup;
 			children = (
+				E9DD466E1F0DD8EF006C0003 /* OCSP */,
 				44707D6F1820208F0005B2C6 /* GenerateThumbnailForURL.m */,
 				44707D711820208F0005B2C6 /* GeneratePreviewForURL.m */,
 				44707D731820208F0005B2C6 /* main.c */,
 				44707D6A1820208F0005B2C6 /* Supporting Files */,
+				E9DD468D1F0E1ED7006C0003 /* entitlements.plist */,
 			);
 			path = Provisioning;
 			sourceTree = "<group>";
@@ -155,6 +179,23 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		E9DD466E1F0DD8EF006C0003 /* OCSP */ = {
+			isa = PBXGroup;
+			children = (
+				E9DD46741F0DD8EF006C0003 /* ocspTemplates.h */,
+				E9DD469F1F0F593E006C0003 /* nameTemplates.h */,
+				E9DD46751F0DD8EF006C0003 /* SecBase64.c */,
+				E9DD46761F0DD8EF006C0003 /* SecBase64.h */,
+				E9DD46771F0DD8EF006C0003 /* SecCFRelease.h */,
+				E9DD46791F0DD8EF006C0003 /* SecInternal.h */,
+				E9DD467A1F0DD8EF006C0003 /* SecOCSPRequest.c */,
+				E9DD467B1F0DD8EF006C0003 /* SecOCSPRequest.h */,
+				E9DD467C1F0DD8EF006C0003 /* SecOCSPResponse.c */,
+				E9DD467D1F0DD8EF006C0003 /* SecOCSPResponse.h */,
+			);
+			path = OCSP;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -162,6 +203,13 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9DD46831F0DD8EF006C0003 /* ocspTemplates.h in Headers */,
+				E9DD46A01F0F593E006C0003 /* nameTemplates.h in Headers */,
+				E9DD46881F0DD8EF006C0003 /* SecInternal.h in Headers */,
+				E9DD46861F0DD8EF006C0003 /* SecCFRelease.h in Headers */,
+				E9DD468C1F0DD8EF006C0003 /* SecOCSPResponse.h in Headers */,
+				E9DD468A1F0DD8EF006C0003 /* SecOCSPRequest.h in Headers */,
+				E9DD46851F0DD8EF006C0003 /* SecBase64.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,6 +268,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9DD468E1F0E1ED7006C0003 /* entitlements.plist in Resources */,
 				44707DC61823198A0005B2C6 /* Read Me.rtf in Resources */,
 				44707D8418205A7C0005B2C6 /* template.html in Resources */,
 				44707D6E1820208F0005B2C6 /* InfoPlist.strings in Resources */,
@@ -274,6 +323,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9DD46841F0DD8EF006C0003 /* SecBase64.c in Sources */,
+				E9DD468B1F0DD8EF006C0003 /* SecOCSPResponse.c in Sources */,
+				E9DD46891F0DD8EF006C0003 /* SecOCSPRequest.c in Sources */,
 				44707D701820208F0005B2C6 /* GenerateThumbnailForURL.m in Sources */,
 				44707D721820208F0005B2C6 /* GeneratePreviewForURL.m in Sources */,
 				44707D741820208F0005B2C6 /* main.c in Sources */,
@@ -381,6 +433,8 @@
 		44707D791820208F0005B2C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Provisioning/Provisioning-Prefix.pch";
@@ -394,6 +448,8 @@
 		44707D7A1820208F0005B2C6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Provisioning/Provisioning-Prefix.pch";
@@ -469,6 +525,7 @@
 				44FB5C3E1831C6B500AD6BC6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

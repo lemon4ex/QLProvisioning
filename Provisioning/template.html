@@ -130,6 +130,9 @@
 		span.warning {
 			color: #daa520;
 		}
+        span.ok {
+            color: green;
+        }
 
 		div#provision_info > div.debug  {
 			color:red;
@@ -214,7 +217,20 @@
 				<div class="detail">Check <a href="https://developer.apple.com/account/__Platform__/identifiers/bundle/bundleList.action">Identifiers in Dev Center</a></div>
 			</div>
 		</div>
-
+        
+        <div class="container" id="certificates">
+            <div class="header">
+                <div class="label">Developer Certificates</div>
+                <div class="detail">Update <a href="https://developer.apple.com/account/__Platform__/certificate/certificateList.action">Certificates in Dev Center</a></div>
+            </div>
+            <div class="section">
+                <div class="summary">One of the certificates in this list must be in your keychain before Xcode can build and sign an app with this profile.</div>
+            </div>
+            <div class="section divider">
+                <div class="data">__DeveloperCertificatesFormatted__</div>
+            </div>
+        </div>
+        
 		<div class="container" id="devices">
 			<div class="header">
 				<div class="label">Provisioned Devices</div>
@@ -226,19 +242,6 @@
 			<div class="section divider">
 				<div class="data">__ProvisionedDevicesFormatted__</div>
 				<div class="detail">__ProvisionedDevicesCount__</div>
-			</div>
-		</div>
-
-		<div class="container" id="certificates">
-			<div class="header">
-				<div class="label">Developer Certificates</div>
-				<div class="detail">Update <a href="https://developer.apple.com/account/__Platform__/certificate/certificateList.action">Certificates in Dev Center</a></div>
-			</div>
-			<div class="section">
-				<div class="summary">One of the certificates in this list must be in your keychain before Xcode can build and sign an app with this profile.</div>
-			</div>
-			<div class="section divider">
-				<div class="data">__DeveloperCertificatesFormatted__</div>
 			</div>
 		</div>
 
