@@ -1,3 +1,56 @@
+安装使用
+============
+
+1. 拷贝Provisioning.qlgenerator 到 ~/Library/QuickLook
+
+2. 修改沙盒规则：
+修改/usr/share/sandbox/qlmanage.sb文件:
+
+```
+(version 1)
+(deny default)
+(debug deny)
+
+;; 插入下面这行
+(allow network-outbound (remote tcp "*:80"))
+
+(allow job-creation
+(regex #"^/System/Library/Frameworks/QuickLook.framework/Versions/A/Resources/quicklookd(32)?.app/Contents/MacOS/(qlmanage|quicklookd(32)?)$")
+(regex #"^/System/Library/Frameworks/QTKit.framework/"))
+(allow process-fork)
+```
+
+修改/usr/share/sandbox/quicklook-satellite-legacy.sb文件：
+
+```
+(version 1)
+(deny default)
+(debug deny)
+
+;; 插入下面这行
+(allow network-outbound (remote tcp "*:80"))
+
+(allow job-creation
+(regex #"^/System/Library/Frameworks/QuickLook.framework/Versions/A/Resources/quicklookd(32)?.app/Contents/MacOS/(qlmanage|quicklookd(32)?)$")
+(regex #"^/System/Library/Frameworks/QTKit.framework/"))
+(allow process-fork)
+```
+
+3. 重置Quick Look服务和缓存:
+
+```
+$ qlmanage -r
+```
+
+4. 选择.ipa或者.mobileprovision，按空格键即可看到mobileprovision相关的信息内容。
+
+5. 如果想要从Quick Look预览中复制文本，使用以下命令打开隐藏的开关（10.11以上失效）:
+
+```
+$ defaults write com.apple.finder QLEnableTextSelection -bool TRUE
+$ killall Finder
+```
+
 Provisioning
 ============
 
@@ -7,8 +60,8 @@ A ZIP file with the latest version can be [downloaded from the Releases page](ht
 
 If you want to copy information from the Quick Look preview, you need to [change a hidden Finder preference](http://www.macworld.com/article/1164668/select_and_copy_text_within_quick_look_previews.html) using the command line:
 
-	$ defaults write com.apple.finder QLEnableTextSelection -bool TRUE
-	$ killall Finder
+$ defaults write com.apple.finder QLEnableTextSelection -bool TRUE
+$ killall Finder
 
 If you're like the rest of us, provisioning can sometimes make your head spin. When that happens, I recommend reading Sean Heber's [provisioning overview](http://bigzaphod.tumblr.com/post/78574849549/provisioning).
 
