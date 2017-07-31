@@ -12,6 +12,8 @@
 安装使用
 ============
 
+OS X El Capitan 以上，内核下引入了Rootless机制，需要先关闭Rootless才能更改沙盒规则，方法自行搜索。
+
 1. 拷贝Provisioning.qlgenerator 到 ~/Library/QuickLook
 
 2. 修改沙盒规则：
